@@ -115,6 +115,8 @@ class Action {
 
     static let ReloadURL = "ReloadURL"
 
+    static let NewTabFromTabTray = "NewTabFromTabTray"
+
     static let TogglePrivateMode = "TogglePrivateBrowing"
     static let ToggleRequestDesktopSite = "ToggleRequestDesktopSite"
     static let ToggleNightMode = "ToggleNightMode"
@@ -143,6 +145,10 @@ class Action {
     static let ToggleTrackingProtectionSettingAlwaysOn = "ToggleTrackingProtectionSettingAlwaysOn"
     static let ToggleTrackingProtectionSettingPrivateOnly = "ToggleTrackingProtectionSettingPrivateOnly"
     static let ToggleTrackingProtectionSettingOff = "ToggleTrackingProtectionSettingOff"
+
+    static let CloseTab = "CloseTab"
+    static let CloseTabFromPageOptions = "CloseTabFromPageOptions"
+    static let CloseTabFromTabTrayLongPressMenu = "CloseTabFromTabTrayLongPressMenu"
 }
 
 private var isTablet: Bool {
@@ -266,7 +272,9 @@ func createScreenGraph(for test: XCTestCase, with app: XCUIApplication) -> Scree
 
     map.addScreenState(NewTabScreen) { screenState in
         screenState.noop(to: HomePanelsScreen)
+        screenState.tap(app.buttons["TabToolbar.tabsButton"], to: TabTray)
         makeURLBarAvailable(screenState)
+        screenState.tap(app.buttons["TabLocationView.pageOptionsButton"], to: PageOptionsMenu)
         screenState.tap(app.buttons["TabToolbar.menuButton"], to: BrowserTabMenu)
     }
 
@@ -588,7 +596,7 @@ func createScreenGraph(for test: XCTestCase, with app: XCUIApplication) -> Scree
     }
 
     map.addScreenState(TabTray) { screenState in
-        screenState.tap(app.buttons["TabTrayController.addTabButton"], to: NewTabScreen)
+        screenState.tap(app.buttons["TabTrayController.addTabButton"], forAction: Action.NewTabFromTabTray, transitionTo: NewTabScreen)
         screenState.tap(app.buttons["TabTrayController.maskButton"], forAction: Action.TogglePrivateMode) { userState in
             userState.isPrivate = !userState.isPrivate
         }
@@ -607,7 +615,8 @@ func createScreenGraph(for test: XCTestCase, with app: XCUIApplication) -> Scree
             screenState.tap(app.buttons["New Private Tab"], forAction: Action.OpenPrivateTabLongPressTabsButton, transitionTo: NewTabScreen) { userState in
                 userState.isPrivate = !userState.isPrivate
             }
-            screenState.tap(app.buttons["Close Tab"], to: HomePanelsScreen)
+            //screenState.tap(app.buttons["Close Tab"], to: HomePanelsScreen)
+            screenState.tap(app.buttons["Close Tab"], forAction: Action.CloseTabFromTabTrayLongPressMenu, Action.CloseTab, transitionTo: HomePanelsScreen)
         }
     }
 
@@ -695,7 +704,8 @@ func createScreenGraph(for test: XCTestCase, with app: XCUIApplication) -> Scree
     map.addScreenState(PageOptionsMenu) {screenState in
         screenState.tap(app.tables["Context Menu"].cells["menu-FindInPage"], to: FindInPage)
         screenState.tap(app.tables["Context Menu"].cells["menu-Bookmark"], forAction: Action.BookmarkThreeDots, Action.Bookmark)
-        screenState.tap(app.tables["Context Menu"].cells["action_remove"], to: HomePanelsScreen)
+        //screenState.tap(app.tables["Context Menu"].cells["action_remove"], to: HomePanelsScreen)
+        screenState.tap(app.tables["Context Menu"].cells["action_remove"], forAction: Action.CloseTabFromPageOptions, Action.CloseTab, transitionTo: HomePanelsScreen)
         screenState.backAction = cancelBackAction
         screenState.dismissOnUse = true
     }

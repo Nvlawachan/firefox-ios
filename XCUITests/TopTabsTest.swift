@@ -38,6 +38,7 @@ class TopTabsTest: BaseTestCase {
     }
 
     private func checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: Int) {
+        navigator.goto(TabTray)
         let numTabsOpen = app.collectionViews.cells.count
         XCTAssertEqual(numTabsOpen, UInt(expectedNumberOfTabsOpen), "The number of tabs open is not correct")
     }
@@ -162,24 +163,28 @@ class TopTabsTest: BaseTestCase {
     }
 
     func testCloseTabFromPageOptionsMenu() {
-        navigator.openURL(url)
-        XCTAssertTrue((navigator.userState.url?.starts(with: "www.mozilla.org"))!)
+        // when closing from PageOptions, opens new Tab
+        navigator.performAction(Action.NewTabFromTabTray)
+        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
         navigator.goto(PageOptionsMenu)
-        navigator.goto(HomePanelsScreen)
-        XCTAssertEqual(navigator.screenState, HomePanelsScreen)
-
-        navigator.goto(TabTray)
-        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 1)
+        /*navigator.performAction(Action.CloseTabFromPageOptions)
+        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
+        navigator.performAction(Action.CloseTabFromPageOptions)
+        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)*/
     }
 
     func testCloseTabFromLongPressTabsButton() {
-        navigator.openURL(url)
+        /*navigator.openURL(url)
         XCTAssertTrue((navigator.userState.url?.starts(with: "www.mozilla.org"))!)
         navigator.goto(TabTrayLongPressMenu)
         navigator.goto(HomePanelsScreen)
-        XCTAssertEqual(navigator.screenState, HomePanelsScreen)
+        XCTAssertEqual(navigator.screenState, HomePanelsScreen)*/
+        navigator.performAction(Action.NewTabFromTabTray)
 
-        navigator.goto(TabTray)
-        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 1)
+        //navigator.goto(TabTray)
+        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
+        navigator.goto(TabTrayLongPressMenu)
+        navigator.performAction(Action.CloseTabFromTabTrayLongPressMenu)
+        checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
         }
 }
