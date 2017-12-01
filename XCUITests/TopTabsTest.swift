@@ -61,7 +61,6 @@ class TopTabsTest: BaseTestCase {
         waitUntilPageLoad()
 
         // Open tab tray to check that both tabs are there
-        //navigator.goto(TabTray)
         checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
         waitforExistence(app.collectionViews.cells["Example Domain"])
         waitforExistence(app.collectionViews.cells["IANA — IANA-managed Reserved Domains"])
@@ -69,26 +68,17 @@ class TopTabsTest: BaseTestCase {
 
     // This test only runs for iPhone see bug 1409750
     func testAddTabByLongPressTabsButton() {
-        navigator.goto(BrowserTab)
-        app.buttons["TabToolbar.tabsButton"].press(forDuration: 1)
-
-        waitforExistence(app.buttons["New Tab"])
-        app.buttons["New Tab"].tap()
-
+        navigator.performAction(Action.OpenNewTabLongPressTabsButton)
         checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 2)
     }
 
     // This test only runs for iPhone see bug 1409750
     func testAddPrivateTabByLongPressTabsButton() {
-        navigator.goto(BrowserTab)
-        app.buttons["TabToolbar.tabsButton"].press(forDuration: 1)
-
-        waitforExistence(app.buttons["New Private Tab"])
-        app.buttons["New Private Tab"].tap()
-
+        navigator.performAction(Action.OpenPrivateTabLongPressTabsButton)
         checkNumberOfTabsExpectedToBeOpen(expectedNumberOfTabsOpen: 1)
         waitforExistence(app.buttons["TabTrayController.maskButton"])
         XCTAssertTrue(app.buttons["TabTrayController.maskButton"].isEnabled)
+        XCTAssertTrue(userState.isPrivate)
     }
 
     func testSwitchBetweenTabs() {
